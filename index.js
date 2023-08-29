@@ -12,7 +12,9 @@ const secretKey = 'mysecretkey';
 app.use(cookieParser(secretKey));
 app.use(express.json())
 app.use(router)
-
+// app.use(express.static('client'));
+app.set('view engine', 'ejs')
+app.set('views', 'views')
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`)
