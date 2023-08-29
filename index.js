@@ -10,6 +10,7 @@ const app = express()
 const secretKey = 'mysecretkey';
 
 app.use(cookieParser(secretKey));
+app.use(express.json())
 app.use(router)
 
 
