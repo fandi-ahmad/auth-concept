@@ -6,6 +6,6 @@ router.get('/', verifyToken, dashboardView)
 router.post('/login', loginUser)
 router.post('/register', registerUser)
 router.get('/token', getRefreshToken)
-router.get('/logout', logoutUser)
+router.delete('/logout', logoutUser)
 
 module.exports = router
