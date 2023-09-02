@@ -11,7 +11,7 @@ const port = 8000
 const app = express()
 const secretKey = () => { return process.env.SECRET_KEY_COOKIES }
 
-const allowedOrigins = [ 'http://localhost:8000', 'http://10.130.73.110:8000' ];
+const allowedOrigins = [ 'http://localhost:8000' ];
 
 const corsOptions = {
   origin: (origin, callback) => {

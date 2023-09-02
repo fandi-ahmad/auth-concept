@@ -24,7 +24,6 @@ const registerUser = async (req, res) => {
     res.status(200).json({
       status: 200,
       message: 'register berhasil',
-      hash: hashPassword,
     })
   } catch (error) {
     res.status(500).json({ status: 500, message: 'Internal server error' });
@@ -68,15 +67,27 @@ const loginUser = async (req, res) => {
       where: { id: userId }
     })
 
+
+    res.cookie('accessToken', accessToken, {
+      httpOnly: true,
+      maxAge: 1000 * 30,
+      secure: true,
+      sameSite: 'none',
+    })
+
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      maxAge: 1000 * 60 * 60 * 24
+      maxAge: 1000 * 60 * 60 * 24,
+      secure: true,
+      sameSite: 'none',
+      // signed: true
     })
 
     res.json({
       status: 200,
       message: 'login successfully',
       access_token: accessToken,
+      refresh_token: refreshToken,
     })
 
   } catch (error) {
@@ -102,9 +113,16 @@ const getRefreshToken = async (req, res) => {
       const accessToken = sign({userId, userEmail}, process.env.AUTH_ACCESS_TOKEN, {
         expiresIn: '30s'
       })
+
+      res.cookie('accessToken', accessToken, {
+        httpOnly: true,
+        maxAge: 1000 * 30,
+        secure: true,
+        sameSite: 'none',
+      })
+
       res.json({
         status: 200,
-        access_token: accessToken,
       })
     })
 

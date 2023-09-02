@@ -1,7 +1,8 @@
 const router = require("express").Router()
+const { addAuthorization } = require('../middleware/verifyToken')
 
 router.get('/login', (req, res) => res.render('login'))
-router.get('/',  (req, res) => res.render('dashboard'))
+router.get('/', addAuthorization, (req, res) => res.render('dashboard'))
 router.get('/get/cookie', (req, res) => {
     const tokenFromCookie = req.cookies.refreshToken;
     const refreshTokenCookie = req.signedCookies.refreshToken;

@@ -1,11 +1,10 @@
 const router = require("express").Router()
 const { dashboardView, loginUser, registerUser, getRefreshToken, logoutUser } = require('../controllers/authControllers')
-const { verifyToken } = require('../middleware/verifyToken')
+const { verifyToken, addAuthorization } = require('../middleware/verifyToken')
 
-router.get('/', verifyToken, dashboardView)
+router.get('/', addAuthorization, dashboardView)
 router.post('/login', loginUser)
 router.post('/register', registerUser)
-router.get('/token', getRefreshToken)
 router.delete('/logout', logoutUser)
 
 module.exports = router
