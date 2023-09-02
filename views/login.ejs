@@ -19,12 +19,15 @@
       </div>
       <button type="submit" class="btn btn-primary">Login</button>
     </form>
+    <div>
+      <button id="logoutBtn" class="btn btn-danger mt-2">logout</button>
+    </div>
   </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-  $(document).ready(function() {
+  $(document).ready(() => {
     $('#loginForm').submit(function(event) {
       event.preventDefault();
       var formData = $(this).serialize();
@@ -33,14 +36,30 @@
         type: 'POST',
         url: '/api/v1/auth/login',
         data: formData,
-        success: function(response) {
+        success: (response) => {
           console.log(response, '<-- response berhasil');
         },
-        error: function(error) {
+        error: (error) => {
           console.log(error, '<-- error');
         }
       });
     });
+
+    // logout button
+    $('#logoutBtn').click(() => {
+      console.log('logout button diklik');
+      $.ajax({
+        type: 'DELETE',
+        url: '/api/v1/auth/logout',
+        success: (response) => {
+          console.log(response, '<-- response berhasil');
+        },
+        error: (error) => {
+          console.log(error, '<-- error');
+        }
+      });
+    })
+
   });
 </script>
 </body>

@@ -86,8 +86,6 @@ const loginUser = async (req, res) => {
     res.json({
       status: 200,
       message: 'login successfully',
-      access_token: accessToken,
-      refresh_token: refreshToken,
     })
 
   } catch (error) {
@@ -147,7 +145,8 @@ const logoutUser = async (req, res) => {
       where: {id: userId}
     })
     res.clearCookie('refreshToken')
-    return res.sendStatus(200)
+    res.clearCookie('accessToken')
+    return res.status(200).json({ status: 200, message: 'logout successfully' })
   } catch (error) {
     res.status(500).json({ status: 500, message: 'Internal server error' });
     console.log(error, '<-- error logout');
