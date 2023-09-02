@@ -1,11 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
 </head>
 <body>
+  <div class="container">
     <h1>halaman Dashboard</h1>
+    <button id="logoutBtn" class="btn btn-danger mt-2">logout</button>
+  </div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(() => {
+    // logout button
+    $('#logoutBtn').click(() => {
+      console.log('logout button diklik');
+
+      Swal.fire({
+        title: 'Logout',
+        text: 'do you want to logout?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Save',
+        denyButtonText: `Don't save`,
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $('#loading-overlay').show();
+          var loadingSwal = Swal.fire({
+            title: 'Loading...',
+            html: 'Please wait while processing...',
+            allowOutsideClick: false,
+            showCancelButton: false,
+            showConfirmButton: false,
+            onBeforeOpen: () => {
+              Swal.showLoading();
+            }
+          });
+
+          $.ajax({
+            type: 'DELETE',
+            url: '/api/v1/auth/logout',
+            success: (response) => {
+              loadingSwal.close();
+              window.location.href = "/login"
+            },
+            error: (error) => {
+              console.log(error, '<-- error');
+              loadingSwal.close();
+            }
+          });
+
+        }
+      })
+
+    })
+  })
+</script>
 </body>
 </html>

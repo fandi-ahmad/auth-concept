@@ -20,11 +20,10 @@
       </div>
       <button type="submit" class="btn btn-primary">Login</button>
     </form>
-    <div>
-      <button id="logoutBtn" class="btn btn-danger mt-2">logout</button>
-    </div>
+    
   </div>
 
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
@@ -32,34 +31,39 @@
     $('#loginForm').submit(function(event) {
       event.preventDefault();
       var formData = $(this).serialize();
-      
+      $('#loading-overlay').show();
+      var loadingSwal = Swal.fire({
+        title: 'Loading...',
+        html: 'Please wait while processing...',
+        allowOutsideClick: false,
+        showCancelButton: false,
+        showConfirmButton: false,
+        onBeforeOpen: () => {
+          Swal.showLoading();
+        }
+      });
       $.ajax({
         type: 'POST',
         url: '/api/v1/auth/login',
         data: formData,
         success: (response) => {
-          console.log(response, '<-- response berhasil');
+          loadingSwal.close();
+          Swal.fire({
+            title: 'Success!',
+            text: response.message || 'yeay! login berhasil',
+            icon: 'success',
+            showCancelButton: false,
+            confirmButtonText: 'OK'
+          }).then(function() {
+            window.location.href = "/"
+          });
         },
         error: (error) => {
           console.log(error, '<-- error');
+          loadingSwal.close();
         }
       });
     });
-
-    // logout button
-    $('#logoutBtn').click(() => {
-      console.log('logout button diklik');
-      $.ajax({
-        type: 'DELETE',
-        url: '/api/v1/auth/logout',
-        success: (response) => {
-          console.log(response, '<-- response berhasil');
-        },
-        error: (error) => {
-          console.log(error, '<-- error');
-        }
-      });
-    })
 
   });
 </script>
