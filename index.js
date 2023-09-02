@@ -11,11 +11,11 @@ const port = 8000
 const app = express()
 const secretKey = () => { return process.env.SECRET_KEY_COOKIES }
 
-const allowedOrigins = [ 'http://localhost:8000' ];
+const allowedOrigins = [ process.env.IP_PORT_ACCESS_FRONTEND_1, process.env.IP_PORT_ACCESS_FRONTEND_2, ];
 
 const corsOptions = {
   origin: (origin, callback) => {
-    if (allowedOrigins.includes(origin)) {
+    if (allowedOrigins.includes(origin) || !origin) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -35,5 +35,5 @@ app.use(cors(corsOptions))
 
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+  console.log(`This app listening on port ${port}`)
 })
