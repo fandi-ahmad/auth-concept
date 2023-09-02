@@ -17,7 +17,6 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
   $(document).ready(() => {
-    // logout button
     $('#logoutBtn').click(() => {
       console.log('logout button diklik');
 
@@ -26,8 +25,7 @@
         text: 'do you want to logout?',
         icon: 'question',
         showCancelButton: true,
-        confirmButtonText: 'Save',
-        denyButtonText: `Don't save`,
+        confirmButtonText: 'Yes',
       }).then((result) => {
         if (result.isConfirmed) {
           $('#loading-overlay').show();
