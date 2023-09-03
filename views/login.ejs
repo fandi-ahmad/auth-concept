@@ -59,8 +59,13 @@
           });
         },
         error: (error) => {
-          console.log(error, '<-- error');
           loadingSwal.close();
+          Swal.fire({
+            title: 'Error!',
+            text: 'Email or Password is wrong',
+            icon: 'error',
+            confirmButtonText: 'OK'
+          });
         }
       });
     });
