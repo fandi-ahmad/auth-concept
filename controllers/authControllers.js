@@ -4,9 +4,7 @@ const { genSalt, hash, compare } = require('bcrypt')
 
 const dashboardView = async (req, res) => {
   try {
-    // const token = process.env.AUTH_REFRESH_TOKEN
     res.send('hello world!')
-    // console.log(token, '<-- token dari env');
   } catch (error) {
     console.log(error, '<-- error dashboard view')
   }
@@ -15,16 +13,32 @@ const dashboardView = async (req, res) => {
 const registerUser = async (req, res) => {
   try {
     const { email, password } = req.body
-    const salt = await genSalt()
-    const hashPassword = await hash(password, salt)
-    await User.create({
-      email: email,
-      password: hashPassword
+
+    // get user by email from req.body
+    const user = await User.findAll({
+      where: { email: email }
     })
-    res.status(200).json({
-      status: 200,
-      message: 'register berhasil',
-    })
+
+    if (user[0]) {
+      res.status(422).json({
+        status: 422,
+        message: 'email is registered',
+      }) 
+    } else {
+      const salt = await genSalt()
+      const hashPassword = await hash(password, salt)
+
+      await User.create({
+        email: email,
+        password: hashPassword
+      })
+
+      res.status(200).json({
+        status: 200,
+        message: 'register successfully',
+      })
+    }
+   
   } catch (error) {
     res.status(500).json({ status: 500, message: 'Internal server error' });
     console.log(error, '<-- error register');

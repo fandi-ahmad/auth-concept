@@ -18,15 +18,18 @@ const addAuthorization = async (req, res, next) => {
 
   // Jika accessToken tidak ada
   if (!accessToken) {
-    if(!refreshToken) return res.sendStatus(401)
+    // if(!refreshToken) return res.sendStatus(401)
+    if(!refreshToken) return res.redirect('/login')
     const user = await User.findAll({
       where: {
         refresh_token: refreshToken
       }
     })
-    if(!user[0]) return res.sendStatus(403)
+    // if(!user[0]) return res.sendStatus(403)
+    if(!user[0]) return res.redirect('/login')
     verify(refreshToken, process.env.AUTH_REFRESH_TOKEN, (err, decoded) => {
-      if(err) return res.sendStatus(403)
+      // if(err) return res.sendStatus(403)
+      if(err) return res.redirect('/login')
       const userId = user[0].id
       const userEmail = user[0].email
       const accessToken = sign({userId, userEmail}, process.env.AUTH_ACCESS_TOKEN, {

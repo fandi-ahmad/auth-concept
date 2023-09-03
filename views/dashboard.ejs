@@ -8,8 +8,57 @@
 </head>
 <body>
   <div class="container">
-    <h1>halaman Dashboard</h1>
-    <button id="logoutBtn" class="btn btn-danger mt-2">logout</button>
+    <div class="pt-5 pb-2 d-flex justify-content-between w-100">
+      <h1>Dashboard</h1>
+      <div>
+        <button id="addUser" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">add user</button>
+        <button id="logoutBtn" class="btn btn-danger">logout</button>
+      </div>
+    </div>
+
+    <div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Email</th>
+            <th scope="col">Created</th>
+          </tr>
+        </thead>
+        <tbody id="dataUser">
+         
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Add New User</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="addUserForm">
+            <div class="mb-3">
+              <label for="exampleInputEmail1" class="form-label">Email address</label>
+              <input type="email" class="form-control" name="email" id="email" aria-describedby="emailHelp">
+              <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
+            </div>
+            <div class="mb-3">
+              <label for="exampleInputPassword1" class="form-label" id="password">Password</label>
+              <input type="password" class="form-control" name="password">
+            </div>
+            
+            <div class="w-100 d-flex justify-content-end">
+              <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -17,9 +66,89 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
   $(document).ready(() => {
-    $('#logoutBtn').click(() => {
-      console.log('logout button diklik');
+    // function for get all data user and show in table
+    const getAllDataUser = async () => {
+      $.ajax({
+        type: 'GET',
+        url: '/api/v1/user',
+        success: (response) => {
+          let tableBody = "";
+          $.each(response.data, (index, item) => {
+            tableBody += /*html*/
+              `<tr>
+                <th scope="row">${(index + 1)}</th> 
+                <td>${item.email}</td>
+                <td>${item.createdAt}</td>
+              </tr>`
+          });
+          $("#dataUser").html(tableBody);
+        },
+        error: (error) => {
+          Swal.fire({
+            title: 'Error!',
+            text: error.message || 'Ups, something wrong!',
+            icon: 'error',
+          })
+        }
+      });
+    }
 
+    // run get all data user
+    getAllDataUser()
+
+    $('#addUser').click(() => {
+      document.getElementById("addUserForm").reset();
+    })
+
+    $('#addUserForm').submit(function(event) {
+      event.preventDefault();
+      var formData = $(this).serialize();
+      $('#loading-overlay').show();
+      var loadingSwal = Swal.fire({
+        title: 'Loading...',
+        html: 'Please wait while processing...',
+        allowOutsideClick: false,
+        showCancelButton: false,
+        showConfirmButton: false,
+        onBeforeOpen: () => {
+          Swal.showLoading();
+        }
+      });
+      $.ajax({
+        type: 'POST',
+        url: '/api/v1/auth/register',
+        data: formData,
+        success: (response) => {
+          loadingSwal.close();
+          document.getElementById("addUserForm").reset();
+          $("#addUserModal").modal("hide");
+          Swal.fire({
+            title: 'Success!',
+            text: response.message || 'register berhasil',
+            icon: 'success',
+            showCancelButton: false,
+            confirmButtonText: 'OK'
+          }).then(function() {
+            getAllDataUser()
+          });
+        },
+        error: (error) => {
+          loadingSwal.close();
+          if (error.responseJSON && error.responseJSON.message) {
+            Swal.fire({
+              title: 'Error!',
+              text: error.responseJSON.message,
+              icon: 'error',
+              showCancelButton: false,
+              confirmButtonText: 'OK'
+            });
+          }
+        }
+      });
+    });
+
+    // logout
+    $('#logoutBtn').click(() => {
       Swal.fire({
         title: 'Logout',
         text: 'do you want to logout?',
@@ -48,15 +177,14 @@
               window.location.href = "/login"
             },
             error: (error) => {
-              console.log(error, '<-- error');
               loadingSwal.close();
             }
           });
 
         }
       })
-
     })
+
   })
 </script>
 </body>
