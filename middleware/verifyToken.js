@@ -58,4 +58,41 @@ const addAuthorization = async (req, res, next) => {
 
 };
 
-module.exports = { verifyToken, addAuthorization }
+const checkAuthInLogin = async (req, res, next) => {
+  const refreshToken = req.cookies.refreshToken
+
+  // check refresh token ready or not in cookies
+  if (refreshToken) {
+
+    // get user from refresh token for check auth
+    const user = await User.findAll({
+      where: {
+        refresh_token: refreshToken
+      }
+    })
+
+    // if user ready, generate access token and redirect to / (can't access /login)
+    if (user[0]) {
+      verify(refreshToken, process.env.AUTH_REFRESH_TOKEN, (err, decoded) => {
+        const userId = user[0].id
+        const userEmail = user[0].email
+        const accessToken = sign({userId, userEmail}, process.env.AUTH_ACCESS_TOKEN, {
+          expiresIn: '30s'
+        })
+  
+        res.cookie('accessToken', accessToken, {
+          httpOnly: true,
+          maxAge: 1000 * 30,
+          secure: true,
+          sameSite: 'none',
+        })
+  
+        res.redirect('/')
+      })
+    }
+  }
+
+  next()
+}
+
+module.exports = { verifyToken, addAuthorization, checkAuthInLogin }
